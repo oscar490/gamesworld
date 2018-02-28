@@ -109,4 +109,9 @@ class Usuarios extends \yii\db\ActiveRecord implements IdentityInterface
     {
         return \Yii::$app->security->validatePassword($password, $this->password);
     }
+
+    public function getComentarios()
+    {
+        return $this->hasMany(Comentarios::className(), ['usuario_id' => 'id'])->inverseOf('usuario');
+    }
 }

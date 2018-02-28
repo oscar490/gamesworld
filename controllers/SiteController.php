@@ -2,13 +2,15 @@
 
 namespace app\controllers;
 
+use app\models\ContactForm;
+use app\models\LoginForm;
+use app\models\Videojuegos;
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\Response;
-use yii\filters\VerbFilter;
-use app\models\LoginForm;
-use app\models\ContactForm;
 
 class SiteController extends Controller
 {
@@ -61,7 +63,18 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $dataProvider = new ActiveDataProvider([
+            'query' => Videojuegos::find(),
+            'pagination' => [
+                'pageSize' => 5,
+            ],
+            'sort' => [
+                'defaultOrder' => ['created_at' => SORT_DESC],
+            ],
+        ]);
+        return $this->render('index', [
+            'dataProvider' => $dataProvider,
+        ]);
     }
 
     /**

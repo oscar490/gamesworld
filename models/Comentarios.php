@@ -3,24 +3,24 @@
 namespace app\models;
 
 /**
- * This is the model class for table "compras".
+ * This is the model class for table "comentarios".
  *
  * @property int $id
- * @property int $usuario_id
+ * @property string $texto
  * @property int $videojuego_id
- * @property string $created_at
+ * @property int $usuario_id
  *
  * @property Usuarios $usuario
  * @property Videojuegos $videojuego
  */
-class Compras extends \yii\db\ActiveRecord
+class Comentarios extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'compras';
+        return 'comentarios';
     }
 
     /**
@@ -29,10 +29,10 @@ class Compras extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['usuario_id', 'videojuego_id'], 'required'],
-            [['usuario_id', 'videojuego_id'], 'default', 'value' => null],
-            [['usuario_id', 'videojuego_id'], 'integer'],
-            [['created_at'], 'safe'],
+            [['texto', 'videojuego_id', 'usuario_id'], 'required'],
+            [['videojuego_id', 'usuario_id'], 'default', 'value' => null],
+            [['videojuego_id', 'usuario_id'], 'integer'],
+            [['texto'], 'string', 'max' => 255],
             [['usuario_id'], 'exist', 'skipOnError' => true, 'targetClass' => Usuarios::className(), 'targetAttribute' => ['usuario_id' => 'id']],
             [['videojuego_id'], 'exist', 'skipOnError' => true, 'targetClass' => Videojuegos::className(), 'targetAttribute' => ['videojuego_id' => 'id']],
         ];
@@ -45,10 +45,15 @@ class Compras extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'usuario_id' => 'Usuario ID',
+            'texto' => 'Texto',
             'videojuego_id' => 'Videojuego ID',
-            'created_at' => 'Fecha',
+            'usuario_id' => 'Usuario ID',
         ];
+    }
+
+    public function formName()
+    {
+        return '';
     }
 
     /**
@@ -56,7 +61,7 @@ class Compras extends \yii\db\ActiveRecord
      */
     public function getUsuario()
     {
-        return $this->hasOne(Usuarios::className(), ['id' => 'usuario_id'])->inverseOf('compras');
+        return $this->hasOne(Usuarios::className(), ['id' => 'usuario_id'])->inverseOf('comentarios');
     }
 
     /**
@@ -64,6 +69,6 @@ class Compras extends \yii\db\ActiveRecord
      */
     public function getVideojuego()
     {
-        return $this->hasOne(Videojuegos::className(), ['id' => 'videojuego_id'])->inverseOf('compras');
+        return $this->hasOne(Videojuegos::className(), ['id' => 'videojuego_id'])->inverseOf('comentarios');
     }
 }

@@ -62,13 +62,33 @@ CREATE TABLE videojuegos
     , genero_id     BIGINT        NOT NULL REFERENCES generos (id) ON DELETE
                                   NO ACTION ON UPDATE CASCADE
     , precio        NUMERIC (5,2) NOT NULL
+    , unidades      NUMERIC(5)    NOT NULL
+    , created_at    TIMESTAMP(0)  NOT NULL DEFAULT localtimestamp
 );
 
-INSERT INTO videojuegos (codigo, titulo, descripcion, plataforma_id, genero_id, precio)
-    VALUES (1000, 'Dragon Ball Fighter Z', 'Lucha de personajes de DBZ.', 2, 1, 50.00),
-            (2000, 'Grand Theft Auto 5', 'Tres amigos haciendo misiones.', 1, 2, 25.00),
-            (3000, 'Far Cry 5', 'Acción, armas, persecuciones, etc.', 8, 3, 56.50);
+INSERT INTO videojuegos (codigo, titulo, descripcion, plataforma_id, genero_id, precio, unidades)
+    VALUES (1000, 'Dragon Ball Fighter Z', 'Lucha de personajes de DBZ.', 2, 1, 50.00, 10),
+            (2000, 'Grand Theft Auto 5', 'Tres amigos haciendo misiones.', 1, 2, 25.00, 5),
+            (3000, 'Far Cry 5', 'Acción, armas, persecuciones, etc.', 8, 3, 56.50, 7);
 
+
+DROP TABLE IF EXISTS comentarios CASCADE;
+
+CREATE TABLE comentarios
+(
+      id            BIGSERIAL    PRIMARY KEY
+    , texto         VARCHAR(255) NOT NULL
+    , videojuego_id BIGINT       NOT NULL REFERENCES videojuegos (id) ON DELETE
+                                 NO ACTION ON UPDATE CASCADE
+    , usuario_id    BIGINT       NOT NULL REFERENCES usuarios (id) ON DELETE
+                                 NO ACTION ON UPDATE CASCADE
+    , created_at    TIMESTAMP(0) NOT NULL DEFAULT localtimestamp
+);
+
+INSERT INTO comentarios (texto, videojuego_id, usuario_id)
+    VALUES ('¡Me encanta, lo recomiendo!', 1, 1),
+            ('¡Muy bueno!', 1, 2),
+            ('!El mejor Far Cry del año!', 3, 1);
 
 
 DROP TABLE IF EXISTS compras CASCADE;
@@ -84,5 +104,5 @@ CREATE TABLE compras
 
 );
 
-INSERT INTO compras (usuario_id, videojuego_id, created_at)
-    VALUES (1, 1, default), (3, 3, localtimestamp - '2 days'::interval);
+/* INSERT INTO compras (usuario_id, videojuego_id, created_at)
+    VALUES (1, 1, default), (3, 3, localtimestamp - '2 days'::interval); */
