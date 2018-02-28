@@ -9,8 +9,11 @@ use app\models\Videojuegos;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\filters\VerbFilter;
+use yii\grid\GridView;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
+use yii\widgets\ActiveForm;
 
 /**
  * ComprasController implements the CRUD actions for Compras model.
@@ -79,12 +82,53 @@ class ComprasController extends Controller
         ]);
     }
 
+    public function actionGestionarAjax($codigo = null)
+    {
+        $modelo = new GestionarForm([
+            'codigo' => $codigo,
+        ]);
+
+        $compras = new ActiveDataProvider([
+            'query' => Compras::find()
+                ->where(['usuario_id' => \Yii::$app->user->id]),
+            'sort' => [
+                'defaultOrder' => ['created_at' => SORT_DESC],
+            ],
+        ]);
+
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return GridView::widget([
+                'dataProvider' => new ActiveDataProvider([
+                    'query' => Videojuegos::find()
+                        ->where(['codigo' => $modelo->codigo]),
+                ]),
+                'columns' => [
+                    'codigo',
+                    'titulo',
+                    'precio',
+                    'unidades',
+                ],
+            ]);
+        }
+
+        return $this->render('gestionar-ajax', [
+            'modelo' => $modelo,
+            'compras' => $compras,
+        ]);
+    }
+
     public function actionGestionar($codigo = null)
     {
         $datos = [];
         $datos['modelo'] = new GestionarForm([
             'codigo' => $codigo,
         ]);
+
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($datos['modelo']);
+        }
 
         $datos['compras'] = new ActiveDataProvider([
             'query' => Compras::find()

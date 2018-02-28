@@ -43,6 +43,7 @@ AppAsset::register($this);
             ['label' => 'Contact', 'url' => ['/site/contact']],
             ['label'=>'Videojuegos', 'url'=>['videojuegos/index']],
             ['label'=>'Gestionar', 'url'=>['compras/gestionar']],
+            ['label'=>'Ajax', 'url'=>['compras/gestionar-ajax']],
             ['label'=>'Compras', 'url'=>['compras/index']],
             Yii::$app->user->isGuest ? (
                 ['label' => 'Login', 'url' => ['/site/login']]
