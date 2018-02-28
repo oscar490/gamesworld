@@ -38,6 +38,11 @@ class Compras extends \yii\db\ActiveRecord
         ];
     }
 
+    public function formName()
+    {
+        return '';
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -65,5 +70,22 @@ class Compras extends \yii\db\ActiveRecord
     public function getVideojuego()
     {
         return $this->hasOne(Videojuegos::className(), ['id' => 'videojuego_id'])->inverseOf('compras');
+    }
+
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            if ($this->isNewRecord) {
+                $videojuego = $this->videojuego;
+                if ($videojuego->unidades != 0) {
+                    $videojuego->unidades = $videojuego->unidades - 1;
+                    $videojuego->save();
+                } else {
+                    \Yii::$app->session->setFlash('error', 'Ya no quedan más unidades');
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

@@ -39,7 +39,18 @@ $this->params['breadcrumbs'][] = $this->title;
             'plataforma.denominacion',
             'genero.nombre',
             'precio:currency',
+            'unidades',
         ],
+    ]) ?>
+
+    <h3>Últimas compras</h3>
+
+    <?= GridView::widget([
+        'dataProvider'=>$compras,
+        'columns'=>[
+            'usuario.nombre',
+            'created_at:datetime',
+        ]
     ]) ?>
 
     <h3>Comentarios</h3>

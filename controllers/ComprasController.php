@@ -2,12 +2,15 @@
 
 namespace app\controllers;
 
-use Yii;
 use app\models\Compras;
 use app\models\ComprasSearch;
+use app\models\GestionarForm;
+use app\models\Videojuegos;
+use Yii;
+use yii\data\ActiveDataProvider;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 /**
  * ComprasController implements the CRUD actions for Compras model.
@@ -46,7 +49,7 @@ class ComprasController extends Controller
 
     /**
      * Displays a single Compras model.
-     * @param integer $id
+     * @param int $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -66,8 +69,9 @@ class ComprasController extends Controller
     {
         $model = new Compras();
 
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['compras/gestionar', 'codigo' => $model->videojuego->codigo]);
         }
 
         return $this->render('create', [
@@ -75,10 +79,40 @@ class ComprasController extends Controller
         ]);
     }
 
+    public function actionGestionar($codigo = null)
+    {
+        $datos = [];
+        $datos['modelo'] = new GestionarForm([
+            'codigo' => $codigo,
+        ]);
+
+        $datos['compras'] = new ActiveDataProvider([
+            'query' => Compras::find()
+                ->where(['usuario_id' => \Yii::$app->user->id]),
+            'pagination' => [
+                'pagesize' => 5,
+            ],
+            'sort' => [
+                'defaultOrder' => ['created_at' => SORT_DESC],
+            ],
+        ]);
+
+        if ($codigo !== null && $datos['modelo']->validate()) {
+            $datos['dataProvider'] = new ActiveDataProvider([
+                'query' => Videojuegos::find()
+                    ->where(['codigo' => $codigo]),
+            ]);
+        }
+
+        return $this->render('gestionar', $datos);
+    }
+
+
+
     /**
      * Updates an existing Compras model.
      * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
+     * @param int $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -98,7 +132,7 @@ class ComprasController extends Controller
     /**
      * Deletes an existing Compras model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
+     * @param int $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -112,7 +146,7 @@ class ComprasController extends Controller
     /**
      * Finds the Compras model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
+     * @param int $id
      * @return Compras the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */

@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\Comentarios;
+use app\models\Compras;
 use app\models\Videojuegos;
 use app\models\VideojuegosSearch;
 use Yii;
@@ -65,12 +66,24 @@ class VideojuegosController extends Controller
             ],
         ]);
 
+        $compras = new ActiveDataProvider([
+            'query' => Compras::find()
+                ->where(['videojuego_id' => $id]),
+            'pagination' => [
+                'pagesize' => 5,
+            ],
+            'sort' => [
+                'defaultOrder' => ['created_at' => SORT_DESC],
+            ],
+        ]);
+
         $comentario = new Comentarios();
 
         return $this->render('view', [
             'model' => $this->findModel($id),
             'dataProvider' => $dataProvider,
             'comentario' => $comentario,
+            'compras' => $compras,
         ]);
     }
 

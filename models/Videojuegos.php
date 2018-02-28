@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use Yii;
+use yii\helpers\Html;
 
 /**
  * This is the model class for table "videojuegos".
@@ -75,6 +75,11 @@ class Videojuegos extends \yii\db\ActiveRecord
     public function getGenero()
     {
         return $this->hasOne(Generos::className(), ['id' => 'genero_id'])->inverseOf('videojuegos');
+    }
+
+    public function getEnlace()
+    {
+        return Html::a($this->titulo, ['videojuegos/view', 'id' => $this->id]);
     }
 
     /**
